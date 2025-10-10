@@ -1,0 +1,21 @@
+{
+  "name": "ai-commit",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "ai-commit": "./dist/main.js"
+  },
+  "scripts": {
+    "dev": "tsx src/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "inquirer": "^12.9.6"
+  },
+  "devDependencies": {
+    "@types/node": "24.7.1",
+    "tsx": "4.16.2",
+    "typescript": "5.9.3"
+  }
+}
