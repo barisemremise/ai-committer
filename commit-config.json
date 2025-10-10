@@ -1,0 +1,12 @@
+{
+  "maxMessageLength": 50,
+  "language": "en",
+  "conventions": [
+    { "prefix": "feat", "description": "Used when a new feature is added." },
+    { "prefix": "fix", "description": "Used when fixing a bug." },
+    { "prefix": "refactor", "description": "Used for changes that modify the code structure without changing its behavior." },
+    { "prefix": "chore", "description": "Used for changes to dependencies, configuration or removing comments." },
+    { "prefix": "docs", "description": "Used for documentation updates." },
+    { "prefix": "test", "description": "Used for adding or updating tests." }
+  ]
+}
