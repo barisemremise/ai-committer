@@ -1,9 +1,9 @@
 {
-  "name": "ai-commit",
+  "name": "ai-committer",
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "ai-commit": "./dist/main.js"
+    "ai-committer": "./dist/main.js"
   },
   "scripts": {
     "dev": "tsx src/main.ts",
@@ -11,7 +11,7 @@
     "start": "node dist/main.js"
   },
   "dependencies": {
-    "inquirer": "^12.9.6"
+    "inquirer": "12.9.6"
   },
   "devDependencies": {
     "@types/node": "24.7.1",
