@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Config } from "./types.js";
+import { Config } from "./types/config";
 
 export const loadConfig = (): Config => {
   const configPath = path.resolve(process.cwd(), "commit-config.json");

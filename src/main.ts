@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import inquirer from "inquirer";
 import { loadConfig } from "./config.util";
 import { getGitDiff, DiffMode } from "./git.util";
