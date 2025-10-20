@@ -8,5 +8,9 @@
     { "prefix": "chore", "description": "Used for changes to dependencies, configuration or removing comments." },
     { "prefix": "docs", "description": "Used for documentation updates." },
     { "prefix": "test", "description": "Used for adding or updating tests." }
-  ]
+  ],
+  "agent": {
+    "model": "gpt-4o-mini",
+    "apiKey": "OPENAI_API_KEY"
+  }
 }

@@ -10,12 +10,13 @@
     ".": "./dist/main.js"
   },
   "scripts": {
-    "build": "tsdown && yarn prepare",
+    "build": "tsdown",
     "dev": "tsdown --watch",
-    "prepare": "chmod +x dist/main.js"
+    "postbuild": "chmod +x dist/main.js"
   },
   "dependencies": {
-    "inquirer": "12.9.6"
+    "@openai/agents": "0.1.10",
+    "zod": "3"
   },
   "devDependencies": {
     "@types/node": "24.7.1",
