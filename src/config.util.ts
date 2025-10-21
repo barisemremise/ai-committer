@@ -12,23 +12,23 @@ export const loadConfig = (): Config => {
   const data = fs.readFileSync(configPath, "utf8");
   const parsed = JSON.parse(data);
 
-  const { commitConfig } = parsed;
+  const { language, conventions, agentConfig } = parsed;
 
-  if (!commitConfig || typeof commitConfig !== "object") {
-    throw new Error("❌ Invalid config: 'commitConfig' field missing or invalid.");
-  }
-
-  if (typeof commitConfig.maxMessageLength !== "number") {
-    throw new Error("❌ Invalid config: 'maxMessageLength' must be a number.");
-  }
-
-  if (typeof commitConfig.language !== "string") {
+  if (typeof language !== "string") {
     throw new Error("❌ Invalid config: 'language' must be a string.");
   }
 
-  if (!Array.isArray(commitConfig.conventions)) {
+  if (!Array.isArray(conventions)) {
     throw new Error("❌ Invalid config: 'conventions' must be an array.");
   }
 
-  return parsed;
+  if (typeof agentConfig.apiKey !== "string") {
+    throw new Error("❌ Invalid config: 'agent.apiKey' must be a string.");
+  }
+
+  if (typeof agentConfig.model !== "string") {
+    throw new Error("❌ Invalid config: 'agent.model' must be a string.");
+  }
+
+  return { commitConfig: { language, conventions }, agentConfig };
 };

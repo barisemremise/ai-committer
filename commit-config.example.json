@@ -1,5 +1,4 @@
 {
-  "maxMessageLength": 50,
   "language": "en",
   "conventions": [
     { "prefix": "feat", "description": "Used when a new feature is added." },
@@ -9,8 +8,10 @@
     { "prefix": "docs", "description": "Used for documentation updates." },
     { "prefix": "test", "description": "Used for adding or updating tests." }
   ],
-  "agent": {
+  "agentConfig": {
     "model": "gpt-4o-mini",
-    "apiKey": "OPENAI_API_KEY"
+    "apiKey": "OPENAI_API_KEY",
+    "temperature": 0.2,
+    "maxTokens": 100
   }
 }

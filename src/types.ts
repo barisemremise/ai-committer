@@ -1,8 +1,8 @@
-export type MCPServerConfig = {
-  name: string;
+export type AgentConfig = {
   model: string;
-  url: string;
   apiKey: string;
+  temperature?: number;
+  maxTokens?: number;
 };
 
 export type Convention = {
@@ -11,13 +11,12 @@ export type Convention = {
 }
 
 export type CommitConfig = {
-  maxMessageLength: number;
   language: string;
   conventions: Convention[];
 }
 
 export type Config = {
+  agentConfig: AgentConfig;
   commitConfig: CommitConfig;
-  mcpServer: MCPServerConfig;
 }
 

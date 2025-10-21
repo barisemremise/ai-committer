@@ -3,6 +3,7 @@ import { loadConfig } from "./config.util";
 import { getGitDiff, DiffMode } from "./git.util";
 
 import { deleteDiffFile, saveDiffToFile } from "./file.util";
+import { getCommitMessage } from "./openai/openAi";
 
 const run = async () => {
   console.log("🚀 AI Commit Helper starting...\n");
@@ -38,22 +39,31 @@ const run = async () => {
   // 2️⃣ Git diff'i alıyoruz
   const diff = getGitDiff(diffMode as DiffMode, pathArg);
 
-  console.log("📦 Diff summary:", diff);
-
-  if (!diff) return;
+  if (!diff) {
+    return;
+  }
 
   saveDiffToFile(diff);
 
   // 3️⃣ Config dosyasını yüklüyoruz
-  const config = loadConfig();
+  const { commitConfig, agentConfig } = loadConfig();
 
   console.log("✅ Config loaded:");
-  console.log(`- Language: ${config.language}`);
-  console.log(`- Max message length: ${config.maxMessageLength}\n`);
+  console.log(`- Language: ${commitConfig.language}`);
   console.log("Commit conventions:");
-  config.conventions.forEach((c) =>
+  const conventions = commitConfig.conventions;
+  conventions.forEach((c) =>
     console.log(`  • ${c.prefix}: ${c.description}`)
   );
+
+  const aiResponse = await getCommitMessage({
+    diff,
+    commitConfig,
+    agentConfig
+  });
+
+  console.log("\n💡 Suggested Commit Message:\n", aiResponse, "\n");
+
 
   const { confirm } = await inquirer.prompt([
     {
@@ -68,9 +78,6 @@ const run = async () => {
     console.log("🛑 Cancelled.");
     return;
   }
-
-  console.log("\n📦 Diff summary:\n");
-  console.log(diff.slice(0, 400) + (diff.length > 400 ? "\n..." : ""));
 
   deleteDiffFile();
 };
