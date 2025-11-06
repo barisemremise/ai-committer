@@ -11,6 +11,5 @@ export const deleteDiffFile = () => {
   const filePath = path.resolve(process.cwd(), "ai-diff.txt");
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath);
-    console.log(`🗑️  Deleted ${filePath}`);
   }
 };

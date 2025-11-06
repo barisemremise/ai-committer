@@ -35,3 +35,22 @@ export const getGitDiff = (mode: DiffMode, pathArg?: string): string => {
 };
 
 
+export const commitChanges = (commitMessage: string, mode: string) => {
+  try {
+
+    if (mode === "all") {
+      console.log("📦 Staging all files...");
+      execSync("git add .", { stdio: "inherit" });
+    }
+
+    execSync(`git commit -m "${commitMessage.replace(/"/g, '\\"')}"`, {
+      stdio: "inherit",
+    });
+    console.log("✅ Changes committed successfully.");
+  } catch (err) {
+    console.error("❌ Error committing changes:", err);
+  }
+}
+
+
+

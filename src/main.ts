@@ -1,6 +1,6 @@
 import inquirer from "inquirer";
 import { loadConfig } from "./config.util";
-import { getGitDiff, DiffMode } from "./git.util";
+import { getGitDiff, DiffMode, commitChanges } from "./git.util";
 
 import { deleteDiffFile, saveDiffToFile } from "./file.util";
 import { getCommitMessage } from "./openai/openAi";
@@ -17,7 +17,6 @@ const run = async () => {
       choices: [
         { name: "Staged changes only", value: "staged" },
         { name: "All changes (working tree)", value: "all" },
-        { name: "Specific path", value: "path" }
       ],
       default: "staged"
     }
@@ -43,7 +42,7 @@ const run = async () => {
     return;
   }
 
-  saveDiffToFile(diff);
+  // saveDiffToFile(diff);
 
   // 3️⃣ Config dosyasını yüklüyoruz
   const { commitConfig, agentConfig } = loadConfig();
@@ -56,14 +55,22 @@ const run = async () => {
     console.log(`  • ${c.prefix}: ${c.description}`)
   );
 
-  const aiResponse = await getCommitMessage({
+  const commitOptions = await getCommitMessage({
     diff,
     commitConfig,
     agentConfig
   });
 
-  console.log("\n💡 Suggested Commit Message:\n", aiResponse, "\n");
+  // deleteDiffFile();
 
+  const { selectedCommit } = await inquirer.prompt([
+  {
+    type: "list",
+    name: "selectedCommit",
+    message: "Select the best commit message:",
+    choices: commitOptions,
+  },
+]);
 
   const { confirm } = await inquirer.prompt([
     {
@@ -79,7 +86,7 @@ const run = async () => {
     return;
   }
 
-  deleteDiffFile();
+  commitChanges(selectedCommit, diffMode);
 };
 
 run();

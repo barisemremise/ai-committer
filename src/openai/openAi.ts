@@ -15,8 +15,9 @@ export async function getCommitMessage(params: GetCommitMessageParams) {
   const client = new OpenAI({ apiKey });
 
   const systemPrompt = `
-You are a commit message generator.
-Write concise, conventional commit-style messages based on code diffs. Return your response in this language: ${language}
+You are a commit message generator depends on the git diff.
+Return **ONLY JSON** — an array of 3 short commit messages, no explanations.
+Write concise, conventional commit-style messages based on code diffs. You should return 3 different choices. Return your response in this language: ${language}
 Conventions: ${conventionString}.
 `;
 
@@ -26,7 +27,7 @@ Here is the git diff:
 ${diff}
 \`\`\`
 
-Generate a single, clear and very short commit message. Return your response in this language: ${language}.
+Generate clear and very short commit messages. Return your response in this language: ${language}.
 `;
 
   const response = await client.chat.completions.create({
@@ -37,9 +38,8 @@ Generate a single, clear and very short commit message. Return your response in 
     ],
     temperature: temperature || 0.4,
     max_completion_tokens: maxTokens,
+    response_format: { type: "json_object" }
   });
 
-  console.log("🤖 AI Response:\n", response.choices[0].message?.content?.trim());
-
-  return response.choices[0].message?.content?.trim() || "";
+  return JSON.parse(response.choices[0].message?.content?.trim() || "").commit_messages;
 }
