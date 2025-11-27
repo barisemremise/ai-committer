@@ -12,7 +12,7 @@ export const loadConfig = (): Config => {
   const data = fs.readFileSync(configPath, "utf8");
   const parsed = JSON.parse(data);
 
-  const { language, conventions, agentConfig } = parsed;
+  const { language, conventions, agentConfig, models } = parsed;
 
   if (typeof language !== "string") {
     throw new Error("❌ Invalid config: 'language' must be a string.");
@@ -22,13 +22,9 @@ export const loadConfig = (): Config => {
     throw new Error("❌ Invalid config: 'conventions' must be an array.");
   }
 
-  if (typeof agentConfig.apiKey !== "string") {
-    throw new Error("❌ Invalid config: 'agent.apiKey' must be a string.");
+  if (!Array.isArray(models) || models.length === 0) {
+    throw new Error("❌ Invalid config: 'models' must be a non-empty array.");
   }
 
-  if (typeof agentConfig.model !== "string") {
-    throw new Error("❌ Invalid config: 'agent.model' must be a string.");
-  }
-
-  return { commitConfig: { language, conventions }, agentConfig };
+  return { commitConfig: { language, conventions }, agentConfig, models };
 };

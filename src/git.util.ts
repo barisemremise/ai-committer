@@ -34,6 +34,15 @@ export const getGitDiff = (mode: DiffMode, pathArg?: string): string => {
   }
 };
 
+export function validateDiffSize(diff: string, maxChars = 50000) {
+  if (diff.length > maxChars) {
+    throw new Error(
+      `❌ Diff too large (${(diff.length / 1000).toFixed(1)} KB).\n` +
+      `Allowed max ${maxChars} characters.\n` +
+      `Tip: Stage fewer files or commit incrementally.`
+    );
+  }
+}
 
 export const commitChanges = (commitMessage: string, mode: string) => {
   try {
@@ -51,6 +60,4 @@ export const commitChanges = (commitMessage: string, mode: string) => {
     console.error("❌ Error committing changes:", err);
   }
 }
-
-
 

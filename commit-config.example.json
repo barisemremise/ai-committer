@@ -1,5 +1,6 @@
 {
   "language": "en",
+  "isPipeline": false,
   "conventions": [
     { "prefix": "feat", "description": "Used when a new feature is added." },
     { "prefix": "fix", "description": "Used when fixing a bug." },
@@ -8,10 +9,20 @@
     { "prefix": "docs", "description": "Used for documentation updates." },
     { "prefix": "test", "description": "Used for adding or updating tests." }
   ],
+  "models": [
+    {
+      "type": "openai",
+      "model": "gpt-4o-mini",
+      "apiKey": "OPEN_AI_API_KEY"
+    },
+    {
+      "type": "gemini",
+      "apiKey": "GEMINI_API_KEY",
+      "model": "gemini-2.5-flash"
+    }
+  ],
   "agentConfig": {
-    "model": "gpt-4o-mini",
-    "apiKey": "OPENAI_API_KEY",
     "temperature": 0.2,
-    "maxTokens": 100
+    "maxTokens": 200
   }
 }

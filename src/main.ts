@@ -1,14 +1,13 @@
 import inquirer from "inquirer";
 import { loadConfig } from "./config.util";
-import { getGitDiff, DiffMode, commitChanges } from "./git.util";
+import { getGitDiff, DiffMode, commitChanges, validateDiffSize } from "./git.util";
 
-import { deleteDiffFile, saveDiffToFile } from "./file.util";
-import { getCommitMessage } from "./openai/openAi";
+import { Model } from "./types";
+import { getCommitMessageFactory } from "./models/getCommitMessageFactory";
 
 const run = async () => {
   console.log("🚀 AI Commit Helper starting...\n");
 
-  // 1️⃣ Kullanıcıya diff modu seçtiriyoruz
   const { diffMode } = await inquirer.prompt([
     {
       type: "list",
@@ -35,33 +34,51 @@ const run = async () => {
     pathArg = pathInput;
   }
 
-  // 2️⃣ Git diff'i alıyoruz
   const diff = getGitDiff(diffMode as DiffMode, pathArg);
 
-  if (!diff) {
+  validateDiffSize(diff);
+
+  const { commitConfig, agentConfig, models } = loadConfig();
+
+  console.log("✅ Config loaded:");
+
+  let model: Model | undefined = undefined
+
+  if(models.length === 1) {
+    const model = models[0];
+  }
+
+  else {
+    const modelChoices = models.map((m, index) => ({
+      name: `${m.type} (${m.model})`,
+      value: index
+    }));
+
+    const { selectedModelIndex } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selectedModelIndex",
+        message: "Multiple models found in config. Select which model to use:",
+        choices: modelChoices
+      }
+    ]);
+
+    model = models[selectedModelIndex];
+  }
+
+  console.log(`- Using model: ${model!.type}`);
+
+  if (!model) {
+    console.error("❌ No model selected.");
     return;
   }
 
-  // saveDiffToFile(diff);
-
-  // 3️⃣ Config dosyasını yüklüyoruz
-  const { commitConfig, agentConfig } = loadConfig();
-
-  console.log("✅ Config loaded:");
-  console.log(`- Language: ${commitConfig.language}`);
-  console.log("Commit conventions:");
-  const conventions = commitConfig.conventions;
-  conventions.forEach((c) =>
-    console.log(`  • ${c.prefix}: ${c.description}`)
-  );
-
-  const commitOptions = await getCommitMessage({
+  const commitOptions = await getCommitMessageFactory({
     diff,
     commitConfig,
-    agentConfig
+    agentConfig,
+    model,
   });
-
-  // deleteDiffFile();
 
   const { selectedCommit } = await inquirer.prompt([
   {

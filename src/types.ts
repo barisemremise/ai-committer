@@ -1,9 +1,20 @@
 export type AgentConfig = {
-  model: string;
-  apiKey: string;
   temperature?: number;
   maxTokens?: number;
 };
+
+export const AIModelEnum = {
+  OPENAI: "openai",
+  GEMINI: "gemini"
+}
+
+export type AIModelType = keyof typeof AIModelEnum;
+
+export type Model = {
+  type: AIModelType
+  model: string;
+  apiKey: string;
+}
 
 export type Convention = {
   prefix: string;
@@ -18,5 +29,24 @@ export type CommitConfig = {
 export type Config = {
   agentConfig: AgentConfig;
   commitConfig: CommitConfig;
+  models: Model[];
 }
 
+export type GetCommitMessageParams = {
+  diff: string,
+  commitConfig: CommitConfig
+  agentConfig: AgentConfig
+  numberOfSuggestions?: number
+  model: Model
+}
+
+export type SystemPrompt = {
+  numberOfSuggestions: number;
+  language: string;
+  conventionString: string;
+}
+
+export type UserPrompt = {
+  diff: string;
+  language: string;
+}
