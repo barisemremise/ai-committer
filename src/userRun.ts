@@ -1,5 +1,5 @@
 import inquirer from "inquirer";
-import { commitChanges, DiffMode, getGitDiff, validateDiffSize } from "./git.util";
+import { DiffMode, getGitDiff, gitPostJob, validateDiffSize } from "./git.util";
 import { getCommitMessageFactory } from "./models/getCommitMessageFactory";
 import { Config, Model } from "./types";
 
@@ -34,7 +34,7 @@ export const userRun = async (config: Config) => {
 
   validateDiffSize(diff);
 
-  const { commitConfig, agentConfig, models } = config;
+  const { commitConfig, agentConfig, models, isAutoCommit, isAutoPush } = config;
 
   let model: Model | undefined = undefined
 
@@ -95,5 +95,5 @@ export const userRun = async (config: Config) => {
     return;
   }
 
-  commitChanges(selectedCommit, diffMode);
+  gitPostJob({isAutoCommit, isAutoPush, commitMessage: selectedCommit, diffMode: diffMode as DiffMode});
 };

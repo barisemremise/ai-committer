@@ -2,6 +2,13 @@ import { execSync } from "child_process";
 
 export type DiffMode = "staged" | "all" | "path";
 
+type GitPostJobParams = {
+  isAutoCommit: boolean;
+  isAutoPush: boolean;
+  commitMessage: string;
+  diffMode: DiffMode;
+}
+
 export const getGitDiff = (mode: DiffMode, pathArg?: string): string => {
   try {
     let command = "";
@@ -44,7 +51,7 @@ export function validateDiffSize(diff: string, maxChars = 50000) {
   }
 }
 
-export const commitChanges = (commitMessage: string, mode: string) => {
+const commitChanges = (commitMessage: string, mode: string) => {
   try {
 
     if (mode === "all") {
@@ -61,3 +68,26 @@ export const commitChanges = (commitMessage: string, mode: string) => {
   }
 }
 
+const pushChanges = () => {
+  try {
+    console.log("🚀 Pushing changes to remote...");
+
+    execSync("git push", { stdio: "inherit" });
+
+    console.log("✅ Changes pushed successfully.");
+  } catch (err) {
+    console.error("❌ Error pushing changes:", err);
+  }
+}
+
+export const gitPostJob = ({ isAutoCommit, isAutoPush, commitMessage, diffMode }: GitPostJobParams) => {
+  if (isAutoCommit) {
+    console.log("🤖 Auto committing enabled. Committing changes...");
+    commitChanges(commitMessage, diffMode);
+
+    if (isAutoPush) {
+      console.log("🤖 Auto pushing enabled. Pushing changes...");
+      pushChanges();
+    }
+  }
+}
