@@ -26,10 +26,17 @@ export type CommitConfig = {
   conventions: Convention[];
 }
 
+export type PipelineConfig = {
+  modelIndex: number;
+  diffMode: string;
+}
+
 export type Config = {
   agentConfig: AgentConfig;
   commitConfig: CommitConfig;
   models: Model[];
+  isPipeline: boolean;
+  pipelineConfig?: PipelineConfig;
 }
 
 export type GetCommitMessageParams = {

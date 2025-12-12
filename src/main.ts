@@ -1,109 +1,21 @@
-import inquirer from "inquirer";
 import { loadConfig } from "./config.util";
-import { getGitDiff, DiffMode, commitChanges, validateDiffSize } from "./git.util";
 
-import { Model } from "./types";
-import { getCommitMessageFactory } from "./models/getCommitMessageFactory";
+import { userRun } from "./userRun";
+import { pipelineRun } from "./pipelineRun";
 
-const run = async () => {
-  console.log("🚀 AI Commit Helper starting...\n");
+const main = async () => {
+  try {
+    console.log("🚀 AI Commit Helper starting...\n");
+    const config = loadConfig();
 
-  const { diffMode } = await inquirer.prompt([
-    {
-      type: "list",
-      name: "diffMode",
-      message: "Select which changes should be analyzed:",
-      choices: [
-        { name: "Staged changes only", value: "staged" },
-        { name: "All changes (working tree)", value: "all" },
-      ],
-      default: "staged"
-    }
-  ]);
-
-  let pathArg: string | undefined;
-  if (diffMode === "path") {
-    const { pathInput } = await inquirer.prompt([
-      {
-        type: "input",
-        name: "pathInput",
-        message: "Enter the file or folder path to diff:",
-        validate: (input) => input.trim().length > 0 || "Path cannot be empty."
-      }
-    ]);
-    pathArg = pathInput;
+    if(config.isPipeline) {
+      pipelineRun(config);
+    } else { 
+      userRun(config);
+    };
+  } catch (error) {
+    console.error(`❌ Error: ${error}`);
   }
-
-  const diff = getGitDiff(diffMode as DiffMode, pathArg);
-
-  validateDiffSize(diff);
-
-  const { commitConfig, agentConfig, models } = loadConfig();
-
-  console.log("✅ Config loaded:");
-
-  let model: Model | undefined = undefined
-
-  if(models.length === 1) {
-    const model = models[0];
-  }
-
-  else {
-    const modelChoices = models.map((m, index) => ({
-      name: `${m.type} (${m.model})`,
-      value: index
-    }));
-
-    const { selectedModelIndex } = await inquirer.prompt([
-      {
-        type: "list",
-        name: "selectedModelIndex",
-        message: "Multiple models found in config. Select which model to use:",
-        choices: modelChoices
-      }
-    ]);
-
-    model = models[selectedModelIndex];
-  }
-
-  console.log(`- Using model: ${model!.type}`);
-
-  if (!model) {
-    console.error("❌ No model selected.");
-    return;
-  }
-
-  const commitOptions = await getCommitMessageFactory({
-    diff,
-    commitConfig,
-    agentConfig,
-    model,
-  });
-
-  const { selectedCommit } = await inquirer.prompt([
-  {
-    type: "list",
-    name: "selectedCommit",
-    message: "Select the best commit message:",
-    choices: commitOptions,
-  },
-]);
-
-  const { confirm } = await inquirer.prompt([
-    {
-      type: "confirm",
-      name: "confirm",
-      message: "Continue to AI commit suggestion?",
-      default: true
-    }
-  ]);
-
-  if (!confirm) {
-    console.log("🛑 Cancelled.");
-    return;
-  }
-
-  commitChanges(selectedCommit, diffMode);
 };
 
-run();
+main();

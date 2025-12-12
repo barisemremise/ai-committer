@@ -12,7 +12,7 @@ export const loadConfig = (): Config => {
   const data = fs.readFileSync(configPath, "utf8");
   const parsed = JSON.parse(data);
 
-  const { language, conventions, agentConfig, models } = parsed;
+  const { language, conventions, agentConfig, models, isPipeline, pipelineConfig } = parsed;
 
   if (typeof language !== "string") {
     throw new Error("❌ Invalid config: 'language' must be a string.");
@@ -26,5 +26,9 @@ export const loadConfig = (): Config => {
     throw new Error("❌ Invalid config: 'models' must be a non-empty array.");
   }
 
-  return { commitConfig: { language, conventions }, agentConfig, models };
+  if(isPipeline && !pipelineConfig) {
+    throw new Error("❌ Invalid config: 'pipelineConfig' must be provided when 'isPipeline' is true.");
+  }
+
+  return { commitConfig: { language, conventions }, agentConfig, models, pipelineConfig, isPipeline };
 };

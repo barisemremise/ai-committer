@@ -24,5 +24,9 @@
   "agentConfig": {
     "temperature": 0.2,
     "maxTokens": 200
+  },
+  "pipelineConfig": {
+    "modelIndex": 0,
+    "diffMode": "all"
   }
 }
