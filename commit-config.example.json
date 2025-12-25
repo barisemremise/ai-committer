@@ -1,7 +1,6 @@
 {
   "language": "en",
   "isPipeline": false,
-  "isAutoCommit": false,
   "isAutoPush": false,
   "conventions": [
     { "prefix": "feat", "description": "Used when a new feature is added." },

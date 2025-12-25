@@ -17,24 +17,11 @@ export const userRun = async (config: Config) => {
     }
   ]);
 
-  let pathArg: string | undefined;
-  if (diffMode === "path") {
-    const { pathInput } = await inquirer.prompt([
-      {
-        type: "input",
-        name: "pathInput",
-        message: "Enter the file or folder path to diff:",
-        validate: (input) => input.trim().length > 0 || "Path cannot be empty."
-      }
-    ]);
-    pathArg = pathInput;
-  }
-
-  const diff = getGitDiff(diffMode as DiffMode, pathArg);
+  const diff = getGitDiff(diffMode as DiffMode);
 
   validateDiffSize(diff);
 
-  const { commitConfig, agentConfig, models, isAutoCommit, isAutoPush } = config;
+  const { commitConfig, agentConfig, models, isAutoPush } = config;
 
   let model: Model | undefined = undefined
 
@@ -95,5 +82,5 @@ export const userRun = async (config: Config) => {
     return;
   }
 
-  gitPostJob({isAutoCommit, isAutoPush, commitMessage: selectedCommit, diffMode: diffMode as DiffMode});
+  gitPostJob({isAutoPush, commitMessage: selectedCommit, diffMode: diffMode as DiffMode});
 };

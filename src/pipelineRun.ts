@@ -3,7 +3,7 @@ import { getCommitMessageFactory } from "./models/getCommitMessageFactory";
 import { Config, Model } from "./types";
 
 export const pipelineRun = async (config: Config) => {
-  const { commitConfig, agentConfig, models, isAutoCommit, isAutoPush, pipelineConfig: { modelIndex = 0, diffMode = "staged" } = {} } = config;
+  const { commitConfig, agentConfig, models, isAutoPush, pipelineConfig: { modelIndex = 0, diffMode = "staged" } = {} } = config;
 
   const diff = getGitDiff(diffMode as DiffMode);
 
@@ -35,5 +35,5 @@ export const pipelineRun = async (config: Config) => {
 
   console.log(`- Selected commit message: ${selectedCommit}`);
 
-  gitPostJob({isAutoCommit, isAutoPush, commitMessage: selectedCommit, diffMode: diffMode as DiffMode});
+  gitPostJob({isAutoPush, commitMessage: selectedCommit, diffMode: diffMode as DiffMode});
 };

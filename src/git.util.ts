@@ -3,13 +3,12 @@ import { execSync } from "child_process";
 export type DiffMode = "staged" | "all" | "path";
 
 type GitPostJobParams = {
-  isAutoCommit: boolean;
   isAutoPush: boolean;
   commitMessage: string;
   diffMode: DiffMode;
 }
 
-export const getGitDiff = (mode: DiffMode, pathArg?: string): string => {
+export const getGitDiff = (mode: DiffMode): string => {
   try {
     let command = "";
 
@@ -19,12 +18,6 @@ export const getGitDiff = (mode: DiffMode, pathArg?: string): string => {
         break;
       case "all":
         command = "git diff";
-        break;
-      case "path":
-        if (!pathArg) {
-          throw new Error("❌ Path mode selected but no path provided.");
-        }
-        command = `git diff ${pathArg}`;
         break;
     }
 
@@ -80,8 +73,7 @@ const pushChanges = () => {
   }
 }
 
-export const gitPostJob = ({ isAutoCommit, isAutoPush, commitMessage, diffMode }: GitPostJobParams) => {
-  if (isAutoCommit) {
+export const gitPostJob = ({ isAutoPush, commitMessage, diffMode }: GitPostJobParams) => {
     console.log("🤖 Auto committing enabled. Committing changes...");
     commitChanges(commitMessage, diffMode);
 
@@ -89,5 +81,4 @@ export const gitPostJob = ({ isAutoCommit, isAutoPush, commitMessage, diffMode }
       console.log("🤖 Auto pushing enabled. Pushing changes...");
       pushChanges();
     }
-  }
 }

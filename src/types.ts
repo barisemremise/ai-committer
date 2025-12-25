@@ -36,7 +36,6 @@ export type Config = {
   commitConfig: CommitConfig;
   models: Model[];
   isPipeline: boolean;
-  isAutoCommit: boolean;
   isAutoPush: boolean;
   pipelineConfig?: PipelineConfig;
 }
