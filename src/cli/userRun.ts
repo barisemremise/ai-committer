@@ -1,7 +1,7 @@
 import inquirer from "inquirer";
-import { DiffMode, getGitDiff, gitPostJob, validateDiffSize } from "./git.util";
+import { DiffMode, getGitDiff, gitPostJob, validateDiffSize } from "../core/git.util";
 import { getCommitMessageFactory } from "./models/getCommitMessageFactory";
-import { Config, Model } from "./types";
+import { Config, Model } from "../types";
 
 export const userRun = async (config: Config) => {
   const { diffMode } = await inquirer.prompt([

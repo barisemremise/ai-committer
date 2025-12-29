@@ -1,10 +1,13 @@
 import { AIModelEnum, GetCommitMessageParams } from "@/types";
-import { get } from "http";
 import { getOpenAiCommitMessage } from "./openAi";
 import { getGeminiCommitMessage } from "./gemini";
 
-export const getCommitMessageFactory = async (params: GetCommitMessageParams) => {
-  const { model: { type } } = params;
+export const getCommitMessageFactory = async (
+  params: GetCommitMessageParams
+) => {
+  const {
+    model: { type },
+  } = params;
 
   switch (type) {
     case AIModelEnum.OPENAI:
@@ -14,4 +17,4 @@ export const getCommitMessageFactory = async (params: GetCommitMessageParams) =>
     default:
       throw new Error(`❌ Unsupported model type: ${type}`);
   }
-}
+};

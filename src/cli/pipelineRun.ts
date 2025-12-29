@@ -1,16 +1,22 @@
-import { DiffMode, getGitDiff, gitPostJob, validateDiffSize } from "./git.util";
+import { getGitDiff, gitPostJob, validateDiffSize } from "../core/git.util";
 import { getCommitMessageFactory } from "./models/getCommitMessageFactory";
-import { Config, Model } from "./types";
+import { Config, DiffMode, Model } from "../types";
 
 export const pipelineRun = async (config: Config) => {
-  const { commitConfig, agentConfig, models, isAutoPush, pipelineConfig: { modelIndex = 0, diffMode = "staged" } = {} } = config;
+  const {
+    commitConfig,
+    agentConfig,
+    models,
+    isAutoPush,
+    pipelineConfig: { modelIndex = 0, diffMode = "staged" } = {},
+  } = config;
 
   const diff = getGitDiff(diffMode as DiffMode);
 
   validateDiffSize(diff);
 
-  let model: Model | undefined = undefined
-  if(models.length === 1) {
+  let model: Model | undefined = undefined;
+  if (models.length === 1) {
     model = models[0];
   } else {
     model = models[modelIndex];
@@ -35,5 +41,9 @@ export const pipelineRun = async (config: Config) => {
 
   console.log(`- Selected commit message: ${selectedCommit}`);
 
-  gitPostJob({isAutoPush, commitMessage: selectedCommit, diffMode: diffMode as DiffMode});
+  gitPostJob({
+    isAutoPush,
+    commitMessage: selectedCommit,
+    diffMode: diffMode as DiffMode,
+  });
 };
