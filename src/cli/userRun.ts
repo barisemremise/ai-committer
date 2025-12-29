@@ -1,7 +1,7 @@
 import inquirer from "inquirer";
-import { DiffMode, getGitDiff, gitPostJob, validateDiffSize } from "../core/git.util";
+import { getGitDiff, gitPostJob, validateDiffSize } from "../core/git.util";
 import { getCommitMessageFactory } from "./models/getCommitMessageFactory";
-import { Config, Model } from "../types";
+import { Config, DiffMode, Model } from "../types";
 
 export const userRun = async (config: Config) => {
   const { diffMode } = await inquirer.prompt([
@@ -13,8 +13,8 @@ export const userRun = async (config: Config) => {
         { name: "Staged changes only", value: "staged" },
         { name: "All changes (working tree)", value: "all" },
       ],
-      default: "staged"
-    }
+      default: "staged",
+    },
   ]);
 
   const diff = getGitDiff(diffMode as DiffMode);
@@ -23,14 +23,14 @@ export const userRun = async (config: Config) => {
 
   const { commitConfig, agentConfig, models, isAutoPush } = config;
 
-  let model: Model | undefined = undefined
+  let model: Model | undefined = undefined;
 
-  if(models.length === 1) {
+  if (models.length === 1) {
     model = models[0];
   } else {
     const modelChoices = models.map((m, index) => ({
       name: `${m.type} (${m.model})`,
-      value: index
+      value: index,
     }));
 
     const { selectedModelIndex } = await inquirer.prompt([
@@ -38,8 +38,8 @@ export const userRun = async (config: Config) => {
         type: "list",
         name: "selectedModelIndex",
         message: "Multiple models found in config. Select which model to use:",
-        choices: modelChoices
-      }
+        choices: modelChoices,
+      },
     ]);
 
     model = models[selectedModelIndex];
@@ -60,27 +60,17 @@ export const userRun = async (config: Config) => {
   });
 
   const { selectedCommit } = await inquirer.prompt([
-  {
-    type: "list",
-    name: "selectedCommit",
-    message: "Select the best commit message:",
-    choices: commitOptions,
-  },
-]);
-
-  const { confirm } = await inquirer.prompt([
     {
-      type: "confirm",
-      name: "confirm",
-      message: "Continue to AI commit suggestion?",
-      default: true
-    }
+      type: "list",
+      name: "selectedCommit",
+      message: "Select the best commit message:",
+      choices: commitOptions,
+    },
   ]);
 
-  if (!confirm) {
-    console.log("🛑 Cancelled.");
-    return;
-  }
-
-  gitPostJob({isAutoPush, commitMessage: selectedCommit, diffMode: diffMode as DiffMode});
+  gitPostJob({
+    isAutoPush,
+    commitMessage: selectedCommit,
+    diffMode: diffMode as DiffMode,
+  });
 };
