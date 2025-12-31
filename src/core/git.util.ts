@@ -7,20 +7,23 @@ type GitPostJobParams = {
   diffMode: DiffMode;
 };
 
-export const getGitDiff = (mode: DiffMode): string => {
+export const getGitDiff = (mode: DiffMode, repoPath?: string): string => {
   try {
     let command = "";
 
     switch (mode) {
       case "staged":
-        command = "git diff --cached";
+        command = "git diff --cached ':(exclude)yarn.lock'";
         break;
       case "all":
-        command = "git diff";
+        command = "git diff ':(exclude)yarn.lock'";
         break;
     }
 
-    const diff = execSync(command, { encoding: "utf8" });
+    const diff = execSync(command, {
+      cwd: repoPath ?? process.cwd(),
+      encoding: "utf8",
+    });
 
     if (!diff.trim()) {
       console.log("⚠️  No changes detected for the selected mode.");

@@ -2,17 +2,28 @@ import fs from "fs";
 import path from "path";
 import { Config } from "./types";
 
-export const loadConfig = (): Config => {
-  const configPath = path.resolve(process.cwd(), "commit-config.json");
+export const loadConfig = (configPath?: string): Config => {
+  const resolvedPath = path.resolve(
+    configPath || process.cwd(),
+    "commit-config.json"
+  );
 
-  if (!fs.existsSync(configPath)) {
+  if (!fs.existsSync(resolvedPath)) {
     throw new Error("❌ commit-config.json not found in current directory");
   }
 
-  const data = fs.readFileSync(configPath, "utf8");
+  const data = fs.readFileSync(resolvedPath, "utf8");
   const parsed = JSON.parse(data);
 
-  const { language, conventions, agentConfig, models, isPipeline, pipelineConfig, isAutoPush } = parsed;
+  const {
+    language,
+    conventions,
+    agentConfig,
+    models,
+    isPipeline,
+    pipelineConfig,
+    isAutoPush,
+  } = parsed;
 
   if (typeof language !== "string") {
     throw new Error("❌ Invalid config: 'language' must be a string.");
@@ -26,9 +37,18 @@ export const loadConfig = (): Config => {
     throw new Error("❌ Invalid config: 'models' must be a non-empty array.");
   }
 
-  if(isPipeline && !pipelineConfig) {
-    throw new Error("❌ Invalid config: 'pipelineConfig' must be provided when 'isPipeline' is true.");
+  if (isPipeline && !pipelineConfig) {
+    throw new Error(
+      "❌ Invalid config: 'pipelineConfig' must be provided when 'isPipeline' is true."
+    );
   }
 
-  return { commitConfig: { language, conventions }, agentConfig, models, pipelineConfig, isPipeline, isAutoPush };
+  return {
+    commitConfig: { language, conventions },
+    agentConfig,
+    models,
+    pipelineConfig,
+    isPipeline,
+    isAutoPush,
+  };
 };
