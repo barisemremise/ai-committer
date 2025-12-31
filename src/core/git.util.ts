@@ -5,6 +5,18 @@ type GitPostJobParams = {
   isAutoPush: boolean;
   commitMessage: string;
   diffMode: DiffMode;
+  execOptions: GitCommitExecParams;
+};
+
+type GitCommitExecParams = {
+  stdio: "pipe" | "inherit";
+  cwd?: string;
+};
+
+type CommitChangesParams = {
+  commitMessage: string;
+  diffMode: DiffMode;
+  execOptions: GitCommitExecParams;
 };
 
 export const getGitDiff = (mode: DiffMode, repoPath?: string): string => {
@@ -46,44 +58,49 @@ export function validateDiffSize(diff: string, maxChars = 50000) {
   }
 }
 
-const commitChanges = (commitMessage: string, mode: string) => {
+function commitChanges({
+  commitMessage,
+  diffMode,
+  execOptions,
+}: CommitChangesParams): void {
   try {
-    if (mode === "all") {
+    if (diffMode === "all") {
       console.log("📦 Staging all files...");
-      execSync("git add .", { stdio: "inherit" });
+      execSync("git add .", execOptions);
     }
 
-    execSync(`git commit -m "${commitMessage.replace(/"/g, '\\"')}"`, {
-      stdio: "inherit",
-    });
+    execSync(
+      `git commit -m "${commitMessage.replace(/"/g, '\\"')}"`,
+      execOptions
+    );
     console.log("✅ Changes committed successfully.");
   } catch (err) {
     console.error("❌ Error committing changes:", err);
   }
-};
+}
 
-const pushChanges = () => {
+function pushChanges(execOptions: GitCommitExecParams): void {
   try {
     console.log("🚀 Pushing changes to remote...");
 
-    execSync("git push", { stdio: "inherit" });
-
+    execSync("git push", execOptions);
     console.log("✅ Changes pushed successfully.");
   } catch (err) {
     console.error("❌ Error pushing changes:", err);
   }
-};
+}
 
-export const gitPostJob = ({
+export function gitPostJob({
   isAutoPush,
   commitMessage,
   diffMode,
-}: GitPostJobParams) => {
+  execOptions,
+}: GitPostJobParams): void {
   console.log("🤖 Auto committing enabled. Committing changes...");
-  commitChanges(commitMessage, diffMode);
+  commitChanges({ commitMessage, diffMode, execOptions });
 
   if (isAutoPush) {
     console.log("🤖 Auto pushing enabled. Pushing changes...");
-    pushChanges();
+    pushChanges(execOptions);
   }
-};
+}

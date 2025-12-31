@@ -72,5 +72,6 @@ export const userRun = async (config: Config) => {
     isAutoPush,
     commitMessage: selectedCommit,
     diffMode: diffMode as DiffMode,
+    execOptions: { stdio: "inherit" },
   });
 };

@@ -10,7 +10,6 @@ const main = async () => {
     const cliMode = args[0];
 
     if (cliMode === "--mcp") {
-      console.error("⚠️  MCP mode is experimental.");
       await mcpRun();
       return;
     }

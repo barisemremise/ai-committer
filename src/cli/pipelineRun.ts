@@ -45,5 +45,6 @@ export const pipelineRun = async (config: Config) => {
     isAutoPush,
     commitMessage: selectedCommit,
     diffMode: diffMode as DiffMode,
+    execOptions: { stdio: "inherit" },
   });
 };

@@ -1,10 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-
-import { getGitDiff } from "../core/git.util";
-import { getSystemPrompt, getUserPrompt } from "../core/prompt.util";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+import { getGitDiff, gitPostJob } from "../core/git.util";
+import { getSystemPrompt, getUserPrompt } from "../core/prompt.util";
 import { loadConfig } from "@/config.util";
-import { GenerateCommitInputSchema } from "./schema";
+import { GenerateCommitInputSchema, CommitChangesInputSchema } from "./schema";
 
 export async function mcpRun() {
   const server = new McpServer({
@@ -18,9 +18,9 @@ export async function mcpRun() {
       title: "Generate Commit Messages",
       description:
         "Generates commit messages from git diff and given conventions.",
-      inputSchema: GenerateCommitInputSchema,
+      inputSchema: GenerateCommitInputSchema as any,
     },
-    async (args) => {
+    async (args: any) => {
       try {
         const validatedArgs = GenerateCommitInputSchema.parse(args);
         const {
@@ -62,6 +62,49 @@ ${systemPrompt}
 USER:
 ${userPrompt}
               `.trim(),
+            },
+          ],
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `Error: ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            },
+          ],
+        };
+      }
+    }
+  );
+
+  server.registerTool(
+    "commit_generated_message",
+    {
+      title: "Commit Generated Message",
+      description:
+        "Commits the generated commit message to the git repository.",
+      inputSchema: CommitChangesInputSchema as any,
+    },
+    async (args: any) => {
+      try {
+        const validatedArgs = CommitChangesInputSchema.parse(args);
+        const { repoPath, message, diffMode, isAutoPush } = validatedArgs;
+
+        gitPostJob({
+          isAutoPush,
+          commitMessage: message,
+          diffMode,
+          execOptions: { stdio: "inherit", cwd: repoPath },
+        });
+
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `✅ Commit created successfully with message: "${message}"`,
             },
           ],
         };
