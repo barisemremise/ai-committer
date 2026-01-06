@@ -29,6 +29,17 @@ export async function mcpRun() {
           numberOfSuggestions = 3,
         } = validatedArgs;
 
+        if (!repoPath) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: "Error: repoPath is required.",
+              },
+            ],
+          };
+        }
+
         const config = loadConfig(repoPath);
 
         const {
@@ -93,11 +104,22 @@ ${userPrompt}
         const validatedArgs = CommitChangesInputSchema.parse(args);
         const { repoPath, message, diffMode, isAutoPush } = validatedArgs;
 
+        if (!repoPath) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: "Error: repoPath is required.",
+              },
+            ],
+          };
+        }
+
         gitPostJob({
           isAutoPush,
           commitMessage: message,
           diffMode,
-          execOptions: { stdio: "inherit", cwd: repoPath },
+          execOptions: { stdio: "ignore", cwd: repoPath },
         });
 
         return {

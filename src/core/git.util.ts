@@ -9,7 +9,7 @@ type GitPostJobParams = {
 };
 
 type GitCommitExecParams = {
-  stdio: "pipe" | "inherit";
+  stdio: "pipe" | "inherit" | "ignore";
   cwd?: string;
 };
 
